@@ -3,9 +3,9 @@ package service
 import (
 	"database/sql"
 	"fmt"
+	"github.com/bemmanue/wildberries_L0/internal/cache/map_cache"
 	"github.com/bemmanue/wildberries_L0/internal/store/sqlstore"
 	_ "github.com/lib/pq"
-	"net/http"
 )
 
 // Start ...
@@ -17,16 +17,18 @@ func Start(config *Config) error {
 	defer db.Close()
 
 	store := sqlstore.New(db)
+	cache, _ := map_cache.New(store)
 
-	srv := newServer(store)
+	srv := newServer(store, cache)
 
-	return http.ListenAndServe(config.BindAddr, srv.router)
+	return srv.router.Run(config.BindAddr)
 }
 
 // newDB ...
 func newDB(config DatabaseConfig) (*sql.DB, error) {
 	databaseURL := fmt.Sprintf(
-		"host=localhost port=%d user=%s dbname=%s sslmode=%s",
+		"host=%s port=%d user=%s dbname=%s sslmode=%s",
+		config.Host,
 		config.Port,
 		config.User,
 		config.Name,

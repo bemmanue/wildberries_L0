@@ -1,7 +1,7 @@
 package teststore
 
 import (
-	"database/sql"
+	"github.com/bemmanue/wildberries_L0/internal/model"
 	"github.com/bemmanue/wildberries_L0/internal/store"
 )
 
@@ -11,7 +11,7 @@ type Store struct {
 }
 
 // New ...
-func New(db *sql.DB) *Store {
+func New() *Store {
 	return &Store{}
 }
 
@@ -23,7 +23,7 @@ func (s *Store) Order() store.OrderRepository {
 
 	s.orderRepository = &OrderRepository{
 		store:  s,
-		orders: make(map[int]string),
+		orders: make(map[string]*model.OrderJSON),
 	}
 
 	return s.orderRepository
