@@ -14,7 +14,7 @@ type OrderRepository struct {
 // Create ...
 func (r *OrderRepository) Create(order *model.OrderJSON) error {
 	if _, ok := r.orders[order.OrderUID]; ok == true {
-		return errors.New("already exists")
+		return errors.New("record already exists")
 	}
 
 	r.orders[order.OrderUID] = order
