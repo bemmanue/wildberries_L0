@@ -11,12 +11,12 @@ type OrderRepository struct {
 
 // Create ...
 func (r *OrderRepository) Create(order *model.OrderJSON) error {
-	if err := r.store.db.QueryRow(
+	if _, err := r.store.db.Exec(
 		"insert into orders (order_uid, data) values ($1, $2)",
 		order.OrderUID,
 		order.Data,
 	); err != nil {
-		return err.Err()
+		return err
 	}
 	return nil
 }

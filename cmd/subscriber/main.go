@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/bemmanue/wildberries_L0/internal/app/server"
+	"github.com/bemmanue/wildberries_L0/internal/config"
 	"github.com/bemmanue/wildberries_L0/internal/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -20,12 +21,12 @@ func init() {
 }
 
 func main() {
-	config, err := server.NewConfig()
+	conf, err := config.NewConfig()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := server.Start(config); err != nil {
+	if err := server.Start(conf); err != nil {
 		log.Fatalln(err)
 	}
 }

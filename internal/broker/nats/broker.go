@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/bemmanue/wildberries_L0/internal/cache"
 	"github.com/bemmanue/wildberries_L0/internal/cache/mapcache"
+	"github.com/bemmanue/wildberries_L0/internal/config"
 	"github.com/bemmanue/wildberries_L0/internal/model"
 	"github.com/bemmanue/wildberries_L0/internal/store"
 	"github.com/go-playground/validator/v10"
@@ -18,8 +19,8 @@ type Broker struct {
 	validator *validator.Validate
 }
 
-func New(store store.Store, cache cache.Cache) (*Broker, error) {
-	conn, err := stan.Connect("test-cluster", "subscriber", stan.NatsURL(stan.DefaultNatsURL))
+func New(config *config.NutsConfig, store store.Store, cache cache.Cache) (*Broker, error) {
+	conn, err := stan.Connect(config.ClusterID, config.SubscriberID, stan.NatsURL(stan.DefaultNatsURL))
 	if err != nil {
 		return nil, err
 	}
@@ -34,8 +35,8 @@ func New(store store.Store, cache cache.Cache) (*Broker, error) {
 	return b, nil
 }
 
-func (b *Broker) Subscribe() error {
-	_, err := b.conn.Subscribe("subject", func(msg *stan.Msg) {
+func (b *Broker) Subscribe(subject string) error {
+	_, err := b.conn.Subscribe(subject, func(msg *stan.Msg) {
 		if err := msg.Ack(); err != nil {
 			log.Println(err)
 			return

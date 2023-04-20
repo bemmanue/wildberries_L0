@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"github.com/bemmanue/wildberries_L0/internal/broker/nats"
 	"github.com/bemmanue/wildberries_L0/internal/cache/mapcache"
+	"github.com/bemmanue/wildberries_L0/internal/config"
 	"github.com/bemmanue/wildberries_L0/internal/store/sqlstore"
 	_ "github.com/lib/pq"
 	"log"
 )
 
 // Start ...
-func Start(config *Config) error {
+func Start(config *config.Config) error {
 	db, err := newDB(*config.Database)
 	if err != nil {
 		return err
@@ -21,12 +22,12 @@ func Start(config *Config) error {
 	store := sqlstore.New(db)
 	cache, _ := mapcache.New(store)
 
-	broker, err := nats.New(store, cache)
+	broker, err := nats.New(config.Nuts, store, cache)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := broker.Subscribe(); err != nil {
+	if err := broker.Subscribe(config.Nuts.Subject); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -36,12 +37,13 @@ func Start(config *Config) error {
 }
 
 // newDB ...
-func newDB(config DatabaseConfig) (*sql.DB, error) {
+func newDB(config config.DatabaseConfig) (*sql.DB, error) {
 	databaseURL := fmt.Sprintf(
-		"host=%s port=%d user=%s dbname=%s sslmode=%s",
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		config.Host,
 		config.Port,
 		config.User,
+		config.Password,
 		config.Name,
 		config.SSLMode,
 	)

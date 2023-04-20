@@ -1,4 +1,4 @@
-package server
+package config
 
 import (
 	"errors"
@@ -10,6 +10,7 @@ import (
 type Config struct {
 	BindAddr string
 	Database *DatabaseConfig
+	Nuts     *NutsConfig
 }
 
 // DatabaseConfig ...
@@ -20,6 +21,14 @@ type DatabaseConfig struct {
 	Password string
 	Name     string
 	SSLMode  string
+}
+
+// NutsConfig ...
+type NutsConfig struct {
+	ClusterID    string
+	PublisherID  string
+	SubscriberID string
+	Subject      string
 }
 
 // NewConfig ...
@@ -34,9 +43,15 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 
+	nutsConfig, err := NewNutsConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		BindAddr: bindAddr,
 		Database: databaseConfig,
+		Nuts:     nutsConfig,
 	}, nil
 }
 
@@ -84,5 +99,35 @@ func NewDatabaseConfig() (*DatabaseConfig, error) {
 		Password: password,
 		Name:     name,
 		SSLMode:  sslMode,
+	}, nil
+}
+
+// NewNutsConfig ...
+func NewNutsConfig() (*NutsConfig, error) {
+	clusterID, exists := os.LookupEnv("CLUSTER_ID")
+	if !exists {
+		return nil, errors.New("CLUSTER_ID not found")
+	}
+
+	publisherID, exists := os.LookupEnv("PUBLISHER_ID")
+	if !exists {
+		return nil, errors.New("PUBLISHER_ID not found")
+	}
+
+	subscriberID, exists := os.LookupEnv("SUBSCRIBER_ID")
+	if !exists {
+		return nil, errors.New("SUBSCRIBER_ID not found")
+	}
+
+	subject, exists := os.LookupEnv("SUBJECT")
+	if !exists {
+		return nil, errors.New("SUBJECT not found")
+	}
+
+	return &NutsConfig{
+		ClusterID:    clusterID,
+		PublisherID:  publisherID,
+		SubscriberID: subscriberID,
+		Subject:      subject,
 	}, nil
 }

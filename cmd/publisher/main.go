@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/bemmanue/wildberries_L0/internal/config"
 	"github.com/bemmanue/wildberries_L0/internal/logger"
 	"github.com/bemmanue/wildberries_L0/internal/model"
+	"github.com/joho/godotenv"
 	"github.com/nats-io/stan.go"
 	"log"
 	"math/rand"
@@ -13,6 +15,10 @@ import (
 )
 
 func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalln("no .env file found")
+	}
+
 	log.SetFlags(0)
 	log.SetOutput(new(logger.Writer))
 }
@@ -21,8 +27,13 @@ func main() {
 	n := flag.Int("n", 1, "count of messages")
 	flag.Parse()
 
+	conf, err := config.NewNutsConfig()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	// connect to nats streaming
-	sc, err := stan.Connect("test-cluster", "publisher", stan.NatsURL(stan.DefaultNatsURL))
+	sc, err := stan.Connect(conf.ClusterID, conf.PublisherID, stan.NatsURL(stan.DefaultNatsURL))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -30,6 +41,9 @@ func main() {
 
 	// read json model
 	modelJSON, err := os.ReadFile("model.json")
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// convert model into order struct
 	var order model.Order
@@ -46,7 +60,7 @@ func main() {
 			log.Fatalln(err)
 		}
 
-		if err := sc.Publish("subject", data); err != nil {
+		if err := sc.Publish(conf.Subject, data); err != nil {
 			log.Fatalln(err)
 		}
 
