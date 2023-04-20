@@ -1,6 +1,7 @@
 .PHONY: build
 build:
-	go build -v ./cmd/service
+	go build -v ./cmd/subscriber
+	go build -v ./cmd/publisher
 
 .PHONY: test
 test:

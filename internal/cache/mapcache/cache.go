@@ -1,4 +1,4 @@
-package map_cache
+package mapcache
 
 import (
 	"github.com/bemmanue/wildberries_L0/internal/cache"
@@ -12,16 +12,14 @@ type Cache struct {
 
 // New ...
 func New(store store.Store) (*Cache, error) {
-	orders, err := store.Order().FindAll()
+	orderCache, err := NewOrderCache(store)
 	if err != nil {
 		return nil, err
 	}
 
 	c := &Cache{
-		//orderCache:
+		orderCache: orderCache,
 	}
-
-	c.Order().Load(orders)
 
 	return c, nil
 }

@@ -1,11 +1,13 @@
-package service
+package server
 
 import (
 	"database/sql"
 	"fmt"
-	"github.com/bemmanue/wildberries_L0/internal/cache/map_cache"
+	"github.com/bemmanue/wildberries_L0/internal/broker/nats"
+	"github.com/bemmanue/wildberries_L0/internal/cache/mapcache"
 	"github.com/bemmanue/wildberries_L0/internal/store/sqlstore"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 // Start ...
@@ -17,7 +19,16 @@ func Start(config *Config) error {
 	defer db.Close()
 
 	store := sqlstore.New(db)
-	cache, _ := map_cache.New(store)
+	cache, _ := mapcache.New(store)
+
+	broker, err := nats.New(store, cache)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := broker.Subscribe(); err != nil {
+		log.Fatalln(err)
+	}
 
 	srv := newServer(store, cache)
 

@@ -1,14 +1,29 @@
-package map_cache
+package mapcache
 
 import (
 	"errors"
 	"github.com/bemmanue/wildberries_L0/internal/model"
+	"github.com/bemmanue/wildberries_L0/internal/store"
 )
 
 // OrderCache ...
 type OrderCache struct {
 	cache  *Cache
 	orders map[string]*model.OrderJSON
+}
+
+// NewOrderCache ...
+func NewOrderCache(store store.Store) (*OrderCache, error) {
+	orders, err := store.Order().FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	c := &OrderCache{
+		orders: orders,
+	}
+
+	return c, nil
 }
 
 // Load ...

@@ -2,15 +2,23 @@ version: "3.9"
 
 services:
 
-  database:
-    container_name: database
-    image: postgres:15.2
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#  database:
+#    container_name: database
+#    image: postgres:15.2
+#    environment:
+#      POSTGRES_DB: ${DB_NAME}
+#      POSTGRES_USER: ${DB_USER}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#    restart: always
+
+  nats:
+    container_name: nats
+    image: nats-streaming:0.25.4
     ports:
-      - "5432:5432"
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - "4222:4222"
+      - "8222:8222"
     restart: always
