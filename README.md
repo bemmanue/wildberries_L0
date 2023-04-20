@@ -2,6 +2,8 @@
 
 Simple service that stores order data in database and in-memory cache
 
+Demonstration: https://drive.google.com/file/d/1G3eLTmiovblVQZqJ7C8FdGGQ8zfvJ02K/view?usp=sharing
+
 
 ### Tech stack:
 - database: PostgreSQL
