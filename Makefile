@@ -1,8 +1,8 @@
 .PHONY: build
 build:
-	docker compose up
 	go build -v ./cmd/subscriber
 	go build -v ./cmd/publisher
+	docker compose up
 
 .PHONY: test
 test:
